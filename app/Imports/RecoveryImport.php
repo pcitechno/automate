@@ -26,6 +26,27 @@ class RecoveryImport implements ToModel, WithHeadingRow
         $date = is_numeric($row[$dateColumn]) ? $this->excelToDate($row[$dateColumn]) : $row[$dateColumn];
 
 
+        // Extract all keys as an array to identify the last column
+        $columns = array_keys($row);
+            
+        // Get the last column data
+        $lastColumn = end($columns);
+        $lastColumnData = $row[$lastColumn];
+        
+        // Remove the last column data from $row
+        unset($row[$lastColumn]);
+        
+        // Insert last column data before 'remark' column
+        $row = array_merge(
+            array_slice($row, 0, array_search('remark', array_keys($row)), true),
+            [$lastColumn => $lastColumnData],
+            array_slice($row, array_search('remark', array_keys($row)), null, true)
+        );
+
+
+
+
+
         return new Recovery([
             'date' => $date,
             'per' => $row['per'],

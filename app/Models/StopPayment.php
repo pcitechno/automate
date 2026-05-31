@@ -9,5 +9,9 @@ class StopPayment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['broker_id', 'pef_code', 'name', 'remark', 'ref_no'];
+    protected $table = 'stop_payments';
+    protected $primaryKey = 's_no';
+    public $incrementing = false;
+
+    protected $fillable = ['s_no', 'broker_id', 'pef_code', 'name', 'remark', 'ref_no'];
 }

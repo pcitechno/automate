@@ -23,7 +23,7 @@ class RecoveryController extends Controller
     public function index()
     {
         // Fetch all recoveries from the database
-        $recoveries = Recovery::all();
+        $recoveries = Recovery::paginate(50);
 
         // Return a view with the recoveries data
         return view('recoveries.index', compact('recoveries'));

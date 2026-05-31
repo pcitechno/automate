@@ -13,64 +13,67 @@ use App\Models\BMCommission;
 use App\Models\CircularCommission;
 use App\Models\FinalCMCommission;
 
+
 class CommissionController extends Controller
 {
-    // Show the view with all data from BM, Final CM, and Circular commissions
-    public function index()
+    public function search(Request $request)
     {
-        $bmCommissions = BMCommission::all();
-        $finalCMCommissions = FinalCMCommission::all();
-        $circularCommissions = CircularCommission::all();
-        
-        // Return the view with the data
-        return view('import-export', compact('bmCommissions', 'finalCMCommissions', 'circularCommissions'));
-    }
-
-    // Import BM Commission data
-    public function importBMCommission(Request $request)
-    {
+        // Validate the search input
         $request->validate([
-            'file' => 'required|mimes:xlsx,csv,xls',
+            'trainer_id' => 'nullable|string',
+            'reference_id' => 'nullable|string',
         ]);
 
-        Excel::import(new BMCommissionImport, $request->file('file'));
+        $trainerId = $request->input('trainer_id');
+        $referenceId = $request->input('reference_id');
 
-        return redirect()->back()->with('success', 'BM Commission data imported successfully!');
+        // Retrieve data from each table based on the input
+        $bmCommissions = BmCommission::when($trainerId, function ($query) use ($trainerId) {
+            return $query->where('trainer_id', $trainerId);
+        })
+        ->when($referenceId, function ($query) use ($referenceId) {
+            return $query->where('reference_id', $referenceId);
+        })
+        ->get();
+
+        $finalCmCommissions = FinalCmCommission::when($trainerId, function ($query) use ($trainerId) {
+            return $query->where('trainer_id', $trainerId);
+        })
+        ->when($referenceId, function ($query) use ($referenceId) {
+            return $query->where('reference_id', $referenceId);
+        })
+        ->get();
+
+        $circularCommissions = CircularCommission::when($trainerId, function ($query) use ($trainerId) {
+            return $query->where('trainer_id', $trainerId);
+        })
+        ->when($referenceId, function ($query) use ($referenceId) {
+            return $query->where('reference_id', $referenceId);
+        })
+        ->get();
+
+        // Pass data to the view
+        return view('commissions.search_results', compact('bmCommissions', 'finalCmCommissions', 'circularCommissions'));
+
+
+        $trainerId = $request->input('trainer_id'); // Assuming 'trainer_id' is passed from the search form
+
+        // Fetch data from finalCmCommissions table
+        $finalCmData = DB::table('final_cm_commissions')
+            ->where('trainer_id', $trainerId)
+            ->select('month_name', 'payable_amt', 'tds_amt', 'final_amt', 'clearing_date', 'bank_name', 'account_no', 'ifsc')
+            ->get();
+
+        // Fetch data from bmCommission table
+        $bmCommissionData = DB::table('bm_commission')
+            ->where('trainer_id', $trainerId)
+            ->select('remark', 'payable_amount', 'tds_amount', 'final_amount_payable', 'clearing_date', 'bank_name', 'bank_account_no', 'ifsc')
+            ->get();
+
+        return view('search_results', compact('finalCmData', 'bmCommissionData'));
     }
 
-    // Export BM Commission data
-    public function exportBMCommission()
-    {
-        return Excel::download(new BMCommissionExport, 'bmcommission.xlsx');
-    }
 
-    // Import Circular Commission data
-    public function importCircularCommission(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,csv,xls',
-        ]);
 
-        Excel::import(new CircularCommissionImport, $request->file('file'));
 
-        return redirect()->back()->with('success', 'Circular Commission data imported successfully!');
-    }
-
-    // Export Circular Commission data
-    public function exportCircularCommission()
-    {
-        return Excel::download(new CircularCommissionExport, 'circular_commission.xlsx');
-    }
-
-    // Import Final CM Commission data
-    public function importFinalCMCommission(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,csv,xls',
-        ]);
-
-        Excel::import(new FinalCMCommissionImport, $request->file('file'));
-
-        return redirect()->back()->with('success', 'Final CM Commission data imported successfully!');
-    }
 }

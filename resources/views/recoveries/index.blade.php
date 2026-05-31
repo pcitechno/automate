@@ -5,39 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recoveries List and Import Excel File</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+
+
+
+
     <style>
         /* General Body Styling */
         body {
-            background-color: #f8f9fa;
-            padding: 20px;
+            background: radial-gradient(circle at top left, #1e3c72, #2a5298);
+    color: #000000;
+    font-family: 'Poppins', sans-serif;
         }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #007bff;
+
+
+        .table-container {
+            background: white;
+            /* padding: 20px; */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-height: 500px; /* Set a maximum height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            /* overflow-x: hidden; Disable horizontal scrolling */
         }
+
+        /* Fixed width for S_No column */
+        .table th:nth-child(1), .table td:nth-child(1) {
+            text-align: center;
+            border-top-left-radius: 20px;
+        }
+        .table th:nth-child(2), .table td:nth-child(2) {
+            text-align: center;
+        }
+        .table th:nth-child(4), .table td:nth-child(4) {
+            text-align: center;
+        }
+
+        .table th:nth-child(5), .table td:nth-child(5) {
+            text-align: center;
+        }
+        .table th:nth-child(9), .table td:nth-child(9) {
+            text-align: left;
+            padding-left: 30px;
+            /* border-top-right-radius: 30px;  */
+        }
+
+
+
+           /* Arrow for tooltip */
+        .table td:hover::before {
+        content: '';
+        position: absolute;
+        bottom: 90%; /* Adjust based on tooltip height */
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent; /* Tooltip arrow color */
+        z-index: 10;
+            }
+
 
         /* Styling table */
         .table thead th {
-            background-color: #007bff;
+            position: sticky;
+            background-color: #048a88;
             color: white;
             white-space: nowrap; /* Prevents wrapping */
             text-transform: uppercase; /* Converts heading to uppercase */
         }
 
+        .table thead th td{
+            white-space: space wr; /* Prevents wrapping */
+        }
         .table {
             table-layout: auto; /* Allows auto width adjustment */
             width: 100%; /* Full width */
         }
 
-        /* Specific column styles for auto fitting */
-        .table td:nth-child(1), /* Date */
-        .table td:nth-child(3), /* Name */
-        .table td:nth-child(9) { /* Remark */
-            white-space: nowrap; /* Prevents wrapping in these columns */
-            overflow: hidden; /* Hides overflow content */
-            text-overflow: ellipsis; /* Adds ellipsis for overflow text */
+
+
+
+
+
+.table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapses borders for cleaner look */
+}
+
+.table th {
+    position: sticky; /* Make header sticky */
+    top: 0; /* Position it at the top */
+    background-color: #007bff; /* Background color for header */
+    color: white; /* Text color for header */
+    z-index: 10; /* Ensure header is above the content */
+    box-shadow: 0 2px 2px -2px gray; /* Optional shadow for better visibility */
+}
+
+.table th, .table td {
+    padding: 10px; /* Padding for cells */
+    text-align: left; /* Align text to the left */
+    border: 1px solid #dee2e6; /* Border styling */
+}
+
+
+#dropdownMenuButton{
+            background: linear-gradient(135deg, #014c3e, #00ca98); /* Gradient background */
+            padding: 8px;
+            padding-left: 15px;
+            padding-right: 15px;
+            color: white;
         }
+
+/* Styling for the table */
+        .table {
+            table-layout: auto; /* Allows auto width adjustment */
+            width: 100%; /* Full width */
+        }
+
+        .table td {
+            white-space: nowrap; /* Prevent text from wrapping to the next line */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Show ellipsis (...) for overflowed text */
+        }
+
 
         .table tbody tr {
             transition: background-color 0.3s ease, transform 0.3s ease;
@@ -58,6 +153,12 @@
             transform: scale(1.05);
         }
 
+
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
         /* Styling for import and search */
         .form-inline {
             display: flex;
@@ -65,31 +166,14 @@
             margin-bottom: 20px;
         }
 
-        /* Styling for file input */
-        .custom-file-input ~ .custom-file-label::after {
-            content: "Browse";
-        }
-
         /* Search input styling */
         .search-input {
-            max-width: 300px;
+            max-width: 250px;
             border-radius: 25px;
-            padding: 0.75rem 2rem;
             background-color: #fff;
             border: 1px solid #ced4da;
             transition: all 0.3s ease;
             position: relative;
-        }
-
-        /* Search icon inside input */
-        .search-input::before {
-            content: "\1F50D"; /* Unicode for magnifying glass */
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-            color: #6c757d;
         }
 
         /* Placeholder styling */
@@ -104,47 +188,458 @@
             outline: none;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
+
+        /* Clear button styling */
+        .clear-btn {
+            margin-left: 10px;
+        }
+.dashboard-header {
+    /* font-size: 2.5rem;    */
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 900;
+    padding: 10px;
+    border-TOP-left-radius: 90px;
+    border-bottom-right-radius: 90px;
+    background: linear-gradient(135deg, #02bb7d, #adcc00);
+    box-shadow: 0 14px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    background: linear-gradient(145deg, #0f2027, #203a43, #f20f79);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 60px 20px;
+    font-size: 17px;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.sidebar h4 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.sidebar a {
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    padding: 7px;
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.3s ease;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 20px;
+    transition: transform 0.3s;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    transform: translateX(10px);
+}
+
+.sidebar a:hover i {
+    transform: rotate(360deg);
+}
+
+body {
+    background: radial-gradient(circle at top left, #1e3c72, #2a5298);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+.colorful-text {
+    background: linear-gradient(90deg, #011407,#ea134cf9, #0614d1, #011407);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+    animation: gradient-animation 5s ease-in-out infinite;
+}
+
+/* Optional: Add animation for a dynamic gradient effect */
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+        .main-content {
+            margin-left: 260px;
+            padding: 10px;
+        }
+
+        .container {
+            /* margin-top: 30px; */
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            padding-top: 0px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+
+        .input-group {
+            /* position: relative; */
+            margin-bottom: 20px;
+            /* width: 100px; */
+            padding-left: 300px;
+        }
+
+        .input-group .form-control {
+            border-radius: 30px 0 0 30px;
+            padding-left: 20px;
+            height: 40px;
+        }
+        .input-group .btn {
+            border-radius: 0 30px 30px 0;
+            background-color: #28a745;
+            height: 40px;
+            width: 60px;
+            color: white;
+        }
+        .input-group .btn:hover {
+            background-color: #218838;
+        }
+        .search-input {
+            border: 2px solid #007bff;
+            border-radius: 30px;
+            padding: 10px 20px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+
+
+        .search-button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 30px;
+            padding: 0 20px;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+
+
+#bac4{
+padding-left: 40px;
+}
+
+#bac3{
+text-align: center;
+}
+
+    #bac5,#bac5 { font-size:14px; }
+    #bac5::first-letter, #bac5::first-letter { text-transform: uppercase }
+
+body {
+    margin: auto;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: auto;
+    background: linear-gradient(315deg, rgb(100, 1, 94) 10%, rgba(0, 123, 255,1) 58%, rgba(242, 15, 121,1) 68%, rgba(15, 32, 39,1) 98%);
+    animation: gradient 40s ease infinite;
+    background-size: 210% 210%;
+    background-attachment: fixed;
+
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+.wave {
+    background: rgb(255 255 255 / 25%);
+    border-radius: 1000% 1000% 0 0;
+    position: fixed;
+    width: 200%;
+    height: 12em;
+    animation: wave 10s -3s linear infinite;
+    transform: translate3d(0, 0, 0);
+    opacity: 0.8;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.wave:nth-of-type(2) {
+    bottom: -1.25em;
+    animation: wave 18s linear reverse infinite;
+    opacity: 0.8;
+}
+
+.wave:nth-of-type(3) {
+    bottom: -2.5em;
+    animation: wave 20s -1s reverse infinite;
+    opacity: 0.9;
+}
+
+@keyframes wave {
+    2% {
+        transform: translateX(1);
+    }
+
+    25% {
+        transform: translateX(-25%);
+    }
+
+    50% {
+        transform: translateX(-50%);
+    }
+
+    75% {
+        transform: translateX(-25%);
+    }
+
+    100% {
+        transform: translateX(1);
+    }
+}
+
+.total-row {
+    font-weight: bold;
+    color: white;
+    background-color: #0056b3;
+
+}
+
+.total-row td {
+    text-align: left;
+    background: #007bff;
+    color: white;
+}
+
+.details-row th td{
+    text-align: left;
+
+}
+
+.TEXT-CENTER{
+    color: white;
+}
+
+.head3{
+    background: linear-gradient(90deg, #ff007b,#2667fe);
+    font-size: 17px;
+}
+
+.head8{
+    background: linear-gradient(90deg, #2667fe,#ff007b);
+    font-size: 17px;
+}
+
+.control-center-heading {
+        color: #8f8d8d;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+        padding: 10px 10px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        background: linear-gradient(145deg, #0f2027, #203a43,#0f2027);
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(75, 74, 74, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .input-group .form-control {
+            border-radius: 30px 0 0 30px;
+            padding-left: 20px;
+            height: 40px;
+        }
+        .recoveries-title {
+    color: white;                   /* White text color */
+    font-weight: 750;               /* Bold text */
+    font-size: 2.6rem;              /* Adjust size as needed */
+    margin-bottom: 20px;            /* Space below the title */
+    text-align: center;             /* Center the title (optional) */
+}
+.dashboard-footer {
+            text-align: center;
+            padding: 5px 0;
+            margin-top: 20px;
+            /* background-color: #f1f1f1;
+            border-top: 1px solid #dee2e6; */
+            color: #6c757d;
+        }
+        .pagination {
+            justify-content: center; /* Center pagination */
+        }
+
+
+        .sidebar a {
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    padding: 7px;
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.3s ease;
+    font-size: 18px;
+    letter-spacing: 0.6px;
+}
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <h1 class="text-center">Recoveries List</h1>
 
-        <!-- Import and Search -->
-        <div class="form-inline mb-4">
-            <!-- Excel Import Form -->
-            <form action="{{ route('import.recovery') }}" method="POST" enctype="multipart/form-data" class="d-flex">
-                @csrf
-                <div class="custom-file">
-                    <input type="file" name="file" id="file" class="custom-file-input" required>
-                    <label class="custom-file-label" for="file">Choose file</label>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+
+    <div class="sidebar" style="background-color: #2c3e50; padding-left: 20px; padding-top: 2px; height: 100vh; color: white;">
+        <a style="padding-left:55px; padding-bottom:0px;" class="navbar-brand" href="/">
+            <img src="{{ asset('storage/images/newlogo.png') }}" alt="Logo" width="100">
+        </a>
+        <div style="color: #9f9f9f; text-align:center; font-size:15px"><i > New Thinking New Way</i> </div>
+        <hr style="border-top: 1px solid #fdfeff; width: 100%;">
+
+        <h5 class="control-center-heading" style="margin-top: 20px">Quick Access</h5>
+        {{-- <a href="/import-data" style="color: #ecf0f1; display: block; margin-bottom: 16px;">
+            <i class="fas fa-home" style="color: #3498db;"></i>  HOME
+        </a> --}}
+        <a href="/search" style="color: #ecf0f1; display: block;">
+            <i class="fas fa-search-dollar fa-lg" style="color: #e67e22; margin-right: 8px;"></i> BM + CM + CIR <!-- Orange -->
+        </a>
+
+        <a href="/stop-payments" style="color: #ecf0f1; display: block;">
+            <i class="fas fa-hand-paper fa-lg" style="color: #c0392b; margin-right: 8px;"></i> Stop Payment <!-- Dark Red -->
+        </a>
+        <a href="/recoveries" style="color: #ecf0f1; display: block;">
+            <i class="fas fa-wallet fa-lg" style="color: #2ecc71; margin-right: 8px;"></i> Recovery Report <!-- Green -->
+        </a>
+
+        <a href="/commission" style="color: #ecf0f1; display: block;" >
+            <i class="fas fa-chart-line fa-lg" style="color: #e74c3c; margin-right: 8px;" ></i> CM Commission <!-- Red -->
+        </a>
+
+        <a href="/import" style="color: #ecf0f1; display: block; margin-left:-3px">
+            <i class="fas fa-balance-scale fa-lg" style="color: #f1c40f; margin-right: 10px;"></i>CIR Commission <!-- Yellow -->
+        </a>
+        <a href="/import-export" style="color: #ecf0f1; display: block;">
+            <i class="fas fa-user-tie fa-lg" style="color: #3498db; margin-right: 8px;"></i> BM Commission <!-- Blue -->
+        </a>
+
+        <a href="/google-index" style="color: #ecf0f1; display: block; margin-left:-2px">
+            <i class="fas fa-user-friends fa-lg" style="color: #8e44ad; margin-right: 10px;"></i>Broker Register <!-- Purple -->
+        </a>
+
+        <a href="/coming1" style="color: #ecf0f1; display: block;">
+            <i class="fas fa-sliders-h fa-lg" style="color: #f39c12; margin-right: 8px;"></i> Control Panel
+        </a>
+
+        <a href="/login" style="color: #ecf0f1; display: block;">
+            <i class="fas fa-sign-out-alt fa-lg" style="color: #16a085; margin-right: 8px;"></i> Logout <!-- Teal -->
+        </a>
+    </div>
+
+<body>
+    <div class="main-content">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="recoveries-title" style=" font-family:Verdana, Geneva, Tahoma, sans-serif">Recoveries</h1>
                 </div>
-                <button type="submit" class="btn btn-primary ml-3">Import</button>
-            </form>
+            </div>
 
-            <!-- Search Input -->
-            <div class="form-group mb-0">
-                <input type="text" id="searchInput" class="form-control search-input" placeholder="🔍 Search recoveries...">
+
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+            <div class="alert alert-success mt-3">{{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger mt-3">{{ session('error') }}</div>
+        @endif
+
+        <!-- Import and Delete Buttons in a Single Row -->
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <button id="dropdownMenuButton" class="btn btn-info" type="button" data-toggle="collapse" data-target="#importDeleteDropdown" aria-expanded="false" aria-controls="importDeleteDropdown">
+                        Import / Delete
+                    </button>
+                    <div class="collapse" id="importDeleteDropdown">
+                        <div class="card card-body mt-2">
+                            <!-- Excel Import Form -->
+                            <form action="{{ route('import.recovery') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center mb-3">
+                                @csrf
+                                <div class="custom-file">
+                                    <input type="file" name="file" id="file" class="custom-file-input" accept=".xls, .xlsx, .csv" required onchange="showFileNameAndValidate()">
+                                    <label class="custom-file-label" for="file">Choose file</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary ml-3" id="importButton" disabled>Import</button>
+                            </form>
+
+                            <!-- Delete All Data Button -->
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteAllModal">Delete All Data</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right"> <!-- Aligning to the right -->
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search..." onkeyup="debounceSearch()" title="Search Records">
+                        <button class="btn custom-gradient-button" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Progress bar for file upload -->
-        <div class="progress mb-4" id="uploadProgress" style="display: none;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" id="progressBar"></div>
-        </div>
-
         <!-- Responsive Recoveries Table -->
-        <div class="table-responsive">
+        <div class="table-container">
             <table class="table table-bordered table-hover" id="recoveriesTable">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Percentage</th>
-                        <th>Name</th>
+                        <th>% Per</th>
+                        <th>Trainer Name</th>
                         <th>Broker ID</th>
                         <th>Code</th>
                         <th>Amount</th>
-                        <th>Recovery Amount</th>
+                        <th>Recovery</th>
                         <th>Balance</th>
                         <th>Remark</th>
                         <th>ORC Sept 2019</th>
@@ -176,54 +671,88 @@
                 </tbody>
             </table>
         </div>
+               <!-- Dashboard Footer -->
+               {{-- <footer class="dashboard-footer">
+                <p>&copy; 2024 Maklife Producer Ltd. Company | Designed by Suraj Kr.</p>
+            </footer> --}}
+        <!-- Modal for Confirming Delete All -->
+        <div class="modal fade" id="confirmDeleteAllModal" tabindex="-1" aria-labelledby="confirmDeleteAllModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteAllModalLabel">Confirm Delete All</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="color: #000000"> you sure you want to delete all records? This action cannot be undone.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <form action="{{ route('delete.recoveries') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-danger">Delete All</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- Search Functionality Script -->
     <script>
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            var searchValue = this.value.toLowerCase();
-            var tableRows = document.querySelectorAll('#recoveriesTable tbody tr');
+        function showFileNameAndValidate() {
+            var fileInput = document.getElementById('file');
+            var fileName = fileInput.files[0].name;
+            var importButton = document.getElementById('importButton');
+            document.querySelector('.custom-file-label').innerText = fileName;
 
-            tableRows.forEach(function(row) {
-                var rowText = row.innerText.toLowerCase();
-                if (rowText.includes(searchValue)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+            // Enable the button only if a file is selected
+            importButton.disabled = fileInput.files.length === 0;
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            filterTable('');  // Clear filter
+        }
+
+        // Debounce function to limit search frequency
+        function debounce(fn, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        function filterTable(query) {
+            const table = document.getElementById('recoveriesTable');
+            const rows = table.getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(query)) {
+                        found = true;
+                        break;
+                    }
                 }
-            });
-        });
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        // Apply debounce to search function
+        const debouncedSearch = debounce(() => {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filterTable(query);
+        }, 300);
+
+        // Attach debounced search to the input
+        document.getElementById('searchInput').addEventListener('keyup', debouncedSearch);
     </script>
-
-    <!-- File Upload Progress Animation -->
-    <script>
-        document.querySelector('form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            var form = this;
-            var progressBar = document.getElementById('progressBar');
-            var uploadProgress = document.getElementById('uploadProgress');
-
-            // Show progress bar
-            uploadProgress.style.display = 'block';
-
-            // Simulate progress (for demonstration purposes)
-            var progress = 0;
-            var interval = setInterval(function() {
-                progress += 10;
-                progressBar.style.width = progress + '%';
-                progressBar.textContent = progress + '%';
-
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    form.submit(); // Submit the form
-                }
-            }, 300);
-        });
-    </script>
-</body>
+    </body>
 </html>

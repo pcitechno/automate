@@ -16,21 +16,21 @@ class BrokersImport implements ToModel
         // Handle empty broker name, assign a default value if empty
         $brokerName = !empty($row[1]) ? $row[1] : 'Unknown Broker';
 
-        try {
+        // try {
             // Validate and convert Date of Joining (doj) from Excel format
-            $doj = $this->validateAndConvertDate($row[4], true);
+            // $doj = $this->validateAndConvertDate($row[4], true);
 
             // Validate and convert Date of Birth (dob) from Excel format
-            $dob = $this->validateAndConvertDate($row[6],  true);
+            // $dob = $this->validateAndConvertDate($row[6],  true);
 
             return new BrokerRegister([
                 'broker_id'      => $row[0],
                 'broker_name'    => $brokerName,
                 'so_do_wo'       => $row[2],
                 'preffered_code' => $row[3],
-                'doj'            => $doj,  // Valid date or default
+                'doj'            => $row[4],  // Valid date or default
                 'gender'         => $row[5],
-                'dob'            => $dob,  // Valid date or null
+                'dob'            => $row[6],  // Valid date or null
                 'address'        => $row[7],
                 'pan_no'         => $row[8],
                 'phone_no'       => $row[9],
@@ -40,10 +40,10 @@ class BrokersImport implements ToModel
                 'bank_account'   => $row[13],
                 'ifsc_code'      => $row[14],
             ]);
-        } catch (\Exception $e) {
-            \Log::error('Error importing row: ' . $e->getMessage());
-            return null;  // Skip problematic row
-        }
+        // } catch (\Exception $e) {
+        //     \Log::error('Error importing row: ' . $e->getMessage());
+        //     return null;  // Skip problematic row
+        // }
     }
 
     /**

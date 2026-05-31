@@ -15,19 +15,25 @@ use App\Models\FinalCMCommission;
 
 class ImportExportController extends Controller
 {
-    // Show the view with all data from BM, Final CM, and Circular commissions
-    public function index()
+    // Show the view with all data — supports search by Trainer_ID, Code, PAN
+    public function index(Request $request)
     {
-        $bmCommissions = BMCommission::all();
-        $finalCMCommissions = FinalCMCommission::all();
-        $circularCommissions = CircularCommission::all();
-        
-        // Return the view with the data
-        return view('import-export', compact('bmCommissions', 'finalCMCommissions', 'circularCommissions'));
+        $search = trim($request->input('search'));
+
+        $query = BMCommission::query();
+
+        if ($search !== '' && $search !== null) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Trainer_ID', 'LIKE', "%{$search}%")
+                  ->orWhere('Code',     'LIKE', "%{$search}%")
+                  ->orWhere('PAN',      'LIKE', "%{$search}%");
+            });
+        }
+
+        $bmCommissions = $query->paginate(12)->appends(['search' => $search]);
+
+        return view('import-export', compact('bmCommissions'));
     }
-
-
-
 
     public function importbm()
     {
@@ -35,18 +41,15 @@ class ImportExportController extends Controller
         return view('import-bm', compact('bmCommissions'));
     }
 
-
-    
-
     // Import BM Commission data
     public function importBMCommission(Request $request)
-    { 
+    {
         $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);
 
         Excel::import(new BMCommissionImport, $request->file('file'));
-        return redirect()->back()->with('success', 'BM Commission data imported successfully!');
+        return redirect()->route('import-bm')->with('success', 'Data imported successfully!');
     }
 
     // Export BM Commission data
@@ -63,7 +66,6 @@ class ImportExportController extends Controller
         ]);
 
         Excel::import(new CircularCommissionImport, $request->file('file'));
-
         return redirect()->back()->with('success', 'Circular Commission data imported successfully!');
     }
 
@@ -81,7 +83,6 @@ class ImportExportController extends Controller
         ]);
 
         Excel::import(new FinalCMCommissionImport, $request->file('file'));
-
         return redirect()->back()->with('success', 'Final CM Commission data imported successfully!');
     }
 }

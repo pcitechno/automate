@@ -5,58 +5,55 @@ namespace App\Http\Controllers;
 use App\Exports\CircularCommissionExport;
 use App\Imports\CircularCommissionImport;
 use App\Imports\FinalCMCommissionImport;
-use App\Models\CircularCommission; // Correct Model Import
-use App\Models\FinalCMCommission;
+use App\Models\Final_c_m_commissions;
+use App\Imports\BMCommissionImport;
+use App\Exports\BMCommissionExport;
 use App\Models\BMCommission;
+use App\Models\CircularCommission;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\FinalCMCommission;
 
 class CircularCommissionController extends Controller
 {
-    /**
-     * Display the import view with all commissions data.
-     */
-    public function importView()
+    public function importView(Request $request)
     {
-        // Retrieve all records from the circular_commissions, final_cm_commissions, and bm_commissions tables
-        $circularCommissions = CircularCommission::all();
-        $commissions = FinalCMCommission::all();
-        $circommissions = BMCommission::all(); 
+        $search = trim($request->input('search', ''));
 
-        return view('import', compact('circularCommissions', 'commissions', 'circommissions'));
+        $query = CircularCommission::query();
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('trainer_id',    'LIKE', "%{$search}%")
+                  ->orWhere('reference_id','LIKE', "%{$search}%")
+                  ->orWhere('so_code',     'LIKE', "%{$search}%");
+            });
+        }
+
+        $circularCommissions = $query->paginate(12)->appends(['search' => $search]);
+
+        return view('import', compact('circularCommissions'));
     }
 
-    /**
-     * Display the view for importing Circular Commissions.
-     */
     public function importcir()
     {
         $circularCommissions = CircularCommission::all();
         return view('import-cir', compact('circularCommissions'));
     }
 
-    /**
-     * Import Circular Commissions from a file.
-     */
     public function import(Request $request)
     {
-        // Validate the uploaded file
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        // Import the data from the file
         Excel::import(new CircularCommissionImport, $request->file('file'));
 
         return redirect()->back()->with('success', 'Data Imported Successfully!');
     }
 
-    /**
-     * Export Circular Commissions as an Excel file.
-     */
     public function export()
     {
-        // Export the Circular Commission data
         return Excel::download(new CircularCommissionExport, 'circular_commission.xlsx');
     }
 }

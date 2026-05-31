@@ -1,0 +1,20 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB; // Add this line
+
+class RolesTableSeeder extends Seeder
+{
+    public function run()
+    {
+        DB::table('roles')->insert([
+            ['name' => 'Admin'],
+            ['name' => 'Manager'],
+            ['name' => 'User'],
+            ['name' => 'Editor'],
+            ['name' => 'Viewer'],
+        ]);
+    }
+}
